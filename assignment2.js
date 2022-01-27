@@ -95,6 +95,10 @@ export class Assignment2 extends Base_Scene {
 
        this.set_colors();
        const arrayOfColors = this.array_of_colors;
+       this.sit_still = false;
+       this.outline = false; //MAY REMOVE THIS, NOT SURE WHAT IT IS
+        this.time_offset = 0;
+
     }
 
     set_colors() {
@@ -118,9 +122,11 @@ export class Assignment2 extends Base_Scene {
         // Add a button for controlling the scene.
         this.key_triggered_button("Outline", ["o"], () => {
             // TODO:  Requirement 5b:  Set a flag here that will toggle your outline on and off
+            this.outline = !(this.outline);
         });
         this.key_triggered_button("Sit still", ["m"], () => {
             // TODO:  Requirement 3d:  Set a flag here that will toggle your swaying motion on and off.
+            this.sit_still = !(this.sit_still);
         });
     }
 
@@ -130,9 +136,41 @@ export class Assignment2 extends Base_Scene {
         // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
         //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
         //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
+
+
+        const max_rot = .05 * Math.PI;
         const colorz = this.array_of_colors[box_index];
+        const t = this.t = program_state.animation_time/1000;
+        const back_and_forth = 3;
         model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+        let rot_angle = ((max_rot/2) + ((max_rot/2) * Math.sin(back_and_forth * Math.PI * (t - this.time_offset))));
+        if (!this.sit_still) {
+            rot_angle = max_rot;
+        }
+
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+
+        if(box_index == 0){
+            model_transform = model_transform.times(Mat4.translation(1,1,0))
+                .times(Mat4.scale(1,1.5,1))
+                .times(Mat4.translation(-1,1,0))
+        }else {
+            model_transform = model_transform.times(Mat4.translation(1,1,0))
+                .times(Mat4.rotation(rot_angle, 0,0, -1))
+                .times(Mat4.translation(-1,1,0))
+        }
+
+        // if (box_index === 0) {
+        //     this.draw_triangle_strip(graphics_state, model_transform, i);
+        // } else if (this.flagDrawOutline) {
+        //     this.draw_outline(graphics_state, model_transform);
+        // } else {
+        //     this.draw_box(graphics_state, model_transform, i);
+        // }
+        //trying to do rotations
+
+
+
         return model_transform;
     }
 
