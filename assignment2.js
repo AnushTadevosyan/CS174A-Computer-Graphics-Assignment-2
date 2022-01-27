@@ -112,6 +112,8 @@ export class Assignment2 extends Base_Scene {
         // TODO:  Helper function for requirement 3 (see hint).
         //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
         // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
+        //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+        //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
 
         return model_transform;
     }
@@ -121,8 +123,13 @@ export class Assignment2 extends Base_Scene {
         const blue = hex_color("#1a9ffa");
         let model_transform = Mat4.identity();
 
+
         // Example for drawing a cube, you can remove this line if needed
-        this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
+        //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
+        for(let i = 0; i < 7; i++){
+            model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+            this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
+        }
     }
 }
