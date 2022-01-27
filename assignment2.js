@@ -90,8 +90,24 @@ export class Assignment2 extends Base_Scene {
      * This gives you a very small code sandbox for editing a simple scene, and for
      * experimenting with matrix transformations.
      */
+    constructor() {
+        super();
+
+       this.set_colors();
+       const arrayOfColors = this.array_of_colors;
+    }
+
     set_colors() {
         // TODO:  Create a class member variable to store your cube's colors.
+
+        this.array_of_colors = [ color(Math.random(), Math.random(), Math.random(),1),
+        color(Math.random(), Math.random(), Math.random(),1),color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1)];
+
         // Hint:  You might need to create a member variable at somewhere to store the colors, using `this`.
         // Hint2: You can consider add a constructor for class Assignment2, or add member variables in Base_Scene's constructor.
     }
@@ -108,13 +124,15 @@ export class Assignment2 extends Base_Scene {
         });
     }
 
-    draw_box(context, program_state, model_transform) {
+    draw_box(context, program_state, model_transform, box_index) {
         // TODO:  Helper function for requirement 3 (see hint).
         //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
         // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
         //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
         //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
-
+        const colorz = this.array_of_colors[box_index];
+        model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+        this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
         return model_transform;
     }
 
@@ -127,9 +145,8 @@ export class Assignment2 extends Base_Scene {
         // Example for drawing a cube, you can remove this line if needed
         //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
-        for(let i = 0; i < 7; i++){
-            model_transform = model_transform.times(Mat4.translation(0, 2, 0));
-            this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
+        for(let i = 0; i < 8; i++){
+           model_transform = this.draw_box(context,program_state,model_transform, i);
         }
     }
 }
