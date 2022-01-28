@@ -142,23 +142,26 @@ export class Assignment2 extends Base_Scene {
         const colorz = this.array_of_colors[box_index];
         const t = this.t = program_state.animation_time/1000;
         const back_and_forth = 3;
-        model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+     //   model_transform = model_transform.times(Mat4.translation(0, 0, 0));
         let rot_angle = ((max_rot/2) + ((max_rot/2) * Math.sin(back_and_forth * Math.PI * (t - this.time_offset))));
         if (!this.sit_still) {
             rot_angle = max_rot;
         }
 
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+       model_transform = model_transform.times(Mat4.translation(0, 0, 0));
+        // if(box_index == 0){
+        //     this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+        //     model_transform = model_transform.times(Mat4.translation(1,1,0))
+        //         .times(Mat4.scale(-1,1,-1))
+        //         .times(Mat4.translation(1,1,0))
+        // }else {
+                model_transform = model_transform.times(Mat4.translation(1,1,0))
+                .times(Mat4.rotation(rot_angle, -0,0, -1))
+                .times(Mat4.translation(-1,1,0))
 
-        if(box_index == 0){
-            model_transform = model_transform.times(Mat4.translation(1,1,0))
-                .times(Mat4.scale(1,1.5,1))
-                .times(Mat4.translation(-1,1,0))
-        }else {
-            model_transform = model_transform.times(Mat4.translation(1,1,0))
-                .times(Mat4.rotation(rot_angle, 0,0, -1))
-                .times(Mat4.translation(-1,1,0))
-        }
+
+      // }
 
         // if (box_index === 0) {
         //     this.draw_triangle_strip(graphics_state, model_transform, i);
