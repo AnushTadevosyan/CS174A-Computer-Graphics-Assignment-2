@@ -29,6 +29,7 @@ class Cube_Outline extends Shape {
         // When a set of lines is used in graphics, you should think of the list entries as
         // broken down into pairs; each pair of vertices will be drawn as a line segment.
         // Note: since the outline is rendered with Basic_shader, you need to redefine the position and color of each vertex
+
     }
 }
 
@@ -98,7 +99,7 @@ export class Assignment2 extends Base_Scene {
        this.sit_still = false;
        this.outline = false; //MAY REMOVE THIS, NOT SURE WHAT IT IS
         this.time_offset = 0;
-
+        this.last_pause_time = 0;
     }
 
     set_colors() {
@@ -134,45 +135,38 @@ export class Assignment2 extends Base_Scene {
         // TODO:  Helper function for requirement 3 (see hint).
         //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
         // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
-        //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
-        //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
 
-
-        const max_rot = .05 * Math.PI;
+        const t = this.t = program_state.animation_time / 1000;
+        const rotation_angle = 0.05*Math.PI; //LOOK AT THESE
         const colorz = this.array_of_colors[box_index];
-        const t = this.t = program_state.animation_time/1000;
         const back_and_forth = 3;
-     //   model_transform = model_transform.times(Mat4.translation(0, 0, 0));
-        let rot_angle = ((max_rot/2) + ((max_rot/2) * Math.sin(back_and_forth * Math.PI * (t - this.time_offset))));
+        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(back_and_forth * Math.PI * (t - this.time_offset)))); //LOOK AT THESE
         if (!this.sit_still) {
-            rot_angle = max_rot;
+            rot_angle = rotation_angle;
         }
 
+
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-       model_transform = model_transform.times(Mat4.translation(0, 0, 0));
-        // if(box_index == 0){
-        //     this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-        //     model_transform = model_transform.times(Mat4.translation(1,1,0))
-        //         .times(Mat4.scale(-1,1,-1))
-        //         .times(Mat4.translation(1,1,0))
-        // }else {
-                model_transform = model_transform.times(Mat4.translation(1,1,0))
-                .times(Mat4.rotation(rot_angle, -0,0, -1))
-                .times(Mat4.translation(-1,1,0))
 
-
-      // }
+        //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
 
         // if (box_index === 0) {
-        //     this.draw_triangle_strip(graphics_state, model_transform, i);
-        // } else if (this.flagDrawOutline) {
-        //     this.draw_outline(graphics_state, model_transform);
-        // } else {
-        //     this.draw_box(graphics_state, model_transform, i);
-        // }
-        //trying to do rotations
+        //     model_transform = model_transform.times(Mat4.translation(1,1,0))
+        //         .times(Mat4.translation(-1,1,0))
+        // }else {
+            model_transform = model_transform.times(Mat4.translation(-1,1,0))
+                .times(Mat4.rotation(-rot_angle, 0,0,-1))
+                .times(Mat4.translation(1,1,0))
+       // }
 
 
+
+        this.prev_angle = rot_angle;
+        this.last_pause_time = t;
+
+
+        // Spin our current coordinate frame as a function of time.  Only do
+        // this movement if the button on the page has not been toggled off.
 
         return model_transform;
     }
