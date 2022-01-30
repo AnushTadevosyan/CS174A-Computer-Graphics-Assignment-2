@@ -49,6 +49,29 @@ class Cube_Single_Strip extends Shape {
 
 
         // TODO (Requirement 6)
+
+        this.arrays.position = Vector3.cast([-1, -1,  1], [ 1, -1,  1], // 0,1 Bottom front edge
+            [-1,  1,  1], [ 1,  1,  1], // 2,3 Top front edge
+            [-1, -1, -1], [ 1, -1, -1], // 4,5 Bottom back edge
+            [-1,  1, -1], [ 1,  1, -1]);
+        this.arrays.normal = Vector3.cast([-1, -1,  1], [ 1, -1,  1], // 0,1 Bottom front edge
+            [-1,  1,  1], [ 1,  1,  1], // 2,3 Top front edge
+            [-1, -1, -1], [ 1, -1, -1], // 4,5 Bottom back edge
+            [-1,  1, -1], [ 1,  1, -1]);
+        this.indices.push(
+            0, 1, 3, // Front face
+            0, 2, 3,
+            0, 2, 4, // Left face
+            2, 4, 6,
+            2, 3, 6, // Top face
+            3, 6, 7,
+            0, 1, 4, // Bottom face
+            1, 4, 5,
+            1, 3, 5, // Right face
+            3, 5, 7,
+            4, 5, 7, // Back face
+            4, 6, 7
+        );
     }
 }
 
@@ -107,10 +130,10 @@ export class Assignment2 extends Base_Scene {
     constructor() {
         super();
 
-       this.set_colors();
-       const arrayOfColors = this.array_of_colors;
-       this.sit_still = false;
-       this.outline = false; //MAY REMOVE THIS, NOT SURE WHAT IT IS
+        this.set_colors();
+        const arrayOfColors = this.array_of_colors;
+        this.sit_still = false;
+        this.outline = false; //MAY REMOVE THIS, NOT SURE WHAT IT IS
         this.time_offset = 0;
         this.last_pause_time = 0;
     }
@@ -119,7 +142,7 @@ export class Assignment2 extends Base_Scene {
         // TODO:  Create a class member variable to store your cube's colors.
 
         this.array_of_colors = [ color(Math.random(), Math.random(), Math.random(),1),
-        color(Math.random(), Math.random(), Math.random(),1),color(Math.random(), Math.random(), Math.random(),1),
+            color(Math.random(), Math.random(), Math.random(),1),color(Math.random(), Math.random(), Math.random(),1),
             color(Math.random(), Math.random(), Math.random(),1),
             color(Math.random(), Math.random(), Math.random(),1),
             color(Math.random(), Math.random(), Math.random(),1),
@@ -152,6 +175,7 @@ export class Assignment2 extends Base_Scene {
         const t = this.t = program_state.animation_time / 1000;
         const rotation_angle = 0.05*Math.PI; //LOOK AT THESE
         const colorz = this.array_of_colors[box_index];
+        const colorzz = this.array_of_colors[0]; //had issues with the 1st two being the same
         const back_and_forth = 3;
         let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(back_and_forth * Math.PI * (t))));
         //LOOK AT THESE
@@ -161,45 +185,36 @@ export class Assignment2 extends Base_Scene {
 
 
 
-                if(box_index==0){
+       //
+            if(this.outline==true){
 
-                }
-                else if(this.outline===true){
-                    // this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES" );
-                    // model_transform   = model_transform.times( Mat4.translation( 1,1.5,0 ))
-                    //     .times( Mat4.rotation( rot_angle,0,0,1 ))
-                    //     .times( Mat4.translation(-1,1.5,0) )
-                    //     .times( Mat4.scale(1,1.5,1 ));
-                    //
-                    // this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES" );
-                    // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
-                    this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
-                    model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
-                        .times(Mat4.rotation(-rot_angle, 0, 0, -1))
-                        .times(Mat4.translation(1, 1, 0))
-                    this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+            this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+            model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
+                .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                .times(Mat4.translation(1, 1, 0))
 
-                }
-                else{
-                    // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-                    // model_transform   = model_transform.times( Mat4.translation( 1,1.5,0 ) )
-                    //     .times( Mat4.rotation( rot_angle, 0,0,1 ))
-                    //     .times( Mat4.translation(-1,1.5,0) )
-                    //     .times( Mat4.scale(1,1.5,1 ));
-                    //
-                    // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-                    // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
-                    this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-                    model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
-                        .times(Mat4.rotation(-rot_angle, 0, 0, -1))
-                        .times(Mat4.translation(1, 1, 0))
+
+               // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
+        }
+        else{
+                if(box_index==0 || box_index==2 || box_index==4 || box_index==6){
+                    this.shapes.strip.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}), "TRIANGLE_STRIP");
+                }else{
                     this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
                 }
 
 
 
-          // }
-       // }
+            model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
+                .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                .times(Mat4.translation(1, 1, 0))
+
+        }
+
+
+
+        // }
+        // }
 
 
 
@@ -223,7 +238,7 @@ export class Assignment2 extends Base_Scene {
         //this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
         for(let i = 0; i < 8; i++){
-           model_transform = this.draw_box(context,program_state,model_transform, i);
+            model_transform = this.draw_box(context,program_state,model_transform, i);
         }
     }
 }
