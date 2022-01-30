@@ -30,12 +30,24 @@ class Cube_Outline extends Shape {
         // broken down into pairs; each pair of vertices will be drawn as a line segment.
         // Note: since the outline is rendered with Basic_shader, you need to redefine the position and color of each vertex
 
+
+        this.arrays.position = Vector3.cast([1,1,-1], [1,-1,-1], [-1,1,1], [-1,-1,1], [1,1,-1],  [-1,1,-1],  [1,1,1],  [-1,1,1],
+            [-1,-1,-1], [-1,-1,1], [-1,1,-1], [-1,1,1], [1,-1,1],  [1,-1,-1],  [1,1,1],  [1,1,-1],
+            [1,-1,1],  [-1,-1,1],  [1,-1,1],  [1,1,1], [1,-1,-1], [-1,-1,-1], [-1,-1,-1], [-1,1,-1]);
+
+
+
+        this.arrays.color = Array(24).fill(color(1, 1, 1, 1));
+        //this.white = this.color;
+        this.indices = false;
     }
 }
 
 class Cube_Single_Strip extends Shape {
     constructor() {
         super("position", "normal");
+
+
         // TODO (Requirement 6)
     }
 }
@@ -54,6 +66,7 @@ class Base_Scene extends Scene {
         this.shapes = {
             'cube': new Cube(),
             'outline': new Cube_Outline(),
+            'strip': new Cube_Single_Strip()
         };
 
         // *** Materials
@@ -140,23 +153,52 @@ export class Assignment2 extends Base_Scene {
         const rotation_angle = 0.05*Math.PI; //LOOK AT THESE
         const colorz = this.array_of_colors[box_index];
         const back_and_forth = 3;
-        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(back_and_forth * Math.PI * (t - this.time_offset)))); //LOOK AT THESE
+        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(back_and_forth * Math.PI * (t))));
+        //LOOK AT THESE
         if (!this.sit_still) {
             rot_angle = rotation_angle;
         }
 
 
-        this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
 
-        //model_transform = model_transform.times(Mat4.translation(0, 2, 0));
+                if(box_index==0){
 
-        // if (box_index === 0) {
-        //     model_transform = model_transform.times(Mat4.translation(1,1,0))
-        //         .times(Mat4.translation(-1,1,0))
-        // }else {
-            model_transform = model_transform.times(Mat4.translation(-1,1,0))
-                .times(Mat4.rotation(-rot_angle, 0,0,-1))
-                .times(Mat4.translation(1,1,0))
+                }
+                else if(this.outline===true){
+                    // this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES" );
+                    // model_transform   = model_transform.times( Mat4.translation( 1,1.5,0 ))
+                    //     .times( Mat4.rotation( rot_angle,0,0,1 ))
+                    //     .times( Mat4.translation(-1,1.5,0) )
+                    //     .times( Mat4.scale(1,1.5,1 ));
+                    //
+                    // this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES" );
+                    // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
+                    this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+                    model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
+                        .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                        .times(Mat4.translation(1, 1, 0))
+                    this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+
+                }
+                else{
+                    // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+                    // model_transform   = model_transform.times( Mat4.translation( 1,1.5,0 ) )
+                    //     .times( Mat4.rotation( rot_angle, 0,0,1 ))
+                    //     .times( Mat4.translation(-1,1.5,0) )
+                    //     .times( Mat4.scale(1,1.5,1 ));
+                    //
+                    // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+                    // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
+                    this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+                    model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
+                        .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                        .times(Mat4.translation(1, 1, 0))
+                    this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+                }
+
+
+
+          // }
        // }
 
 
