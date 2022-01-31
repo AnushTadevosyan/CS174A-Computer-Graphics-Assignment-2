@@ -123,7 +123,7 @@ export class Assignment2 extends Base_Scene {
         const arrayOfColors = this.array_of_colors;
         this.sit_still = false;
         this.outline = false;
-        this.time_offset = 0;
+        this.time_comp = 0;
         this.last_time_paused = 0;
     }
 
@@ -165,7 +165,7 @@ export class Assignment2 extends Base_Scene {
         const rotation_angle = 0.05*Math.PI;
         const colorz = this.array_of_colors[box_index];
         const sweysec = 3;
-        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(sweysec * Math.PI * (t-this.time_offset))));
+        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(sweysec * Math.PI * (t-this.time_comp))));
         var firstDone = false; //may use it later
         if (!this.sit_still) {
             rot_angle = rotation_angle;
@@ -215,8 +215,7 @@ export class Assignment2 extends Base_Scene {
         }
 
         this.last_time_paused = t;
-        // Spin our current coordinate frame as a function of time.  Only do
-        // this movement if the button on the page has not been toggled off.
+
 
         return model_transform;
     }
