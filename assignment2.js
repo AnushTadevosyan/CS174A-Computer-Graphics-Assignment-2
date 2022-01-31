@@ -38,7 +38,7 @@ class Cube_Outline extends Shape {
 
 
         this.arrays.color = Array(24).fill(color(1, 1, 1, 1));
-        //this.white = this.color;
+
         this.indices = false;
     }
 }
@@ -50,27 +50,16 @@ class Cube_Single_Strip extends Shape {
 
         // TODO (Requirement 6)
 
-        this.arrays.position = Vector3.cast([-1, -1,  1], [ 1, -1,  1], // 0,1 Bottom front edge
-            [-1,  1,  1], [ 1,  1,  1], // 2,3 Top front edge
-            [-1, -1, -1], [ 1, -1, -1], // 4,5 Bottom back edge
+        this.arrays.position = Vector3.cast([-1, -1,  1], [ 1, -1,  1],
+            [-1,  1,  1], [ 1,  1,  1],
+            [-1, -1, -1], [ 1, -1, -1],
             [-1,  1, -1], [ 1,  1, -1]);
-        this.arrays.normal = Vector3.cast([-1, -1,  1], [ 1, -1,  1], // 0,1 Bottom front edge
-            [-1,  1,  1], [ 1,  1,  1], // 2,3 Top front edge
-            [-1, -1, -1], [ 1, -1, -1], // 4,5 Bottom back edge
+        this.arrays.normal = Vector3.cast([-1, -1,  1], [ 1, -1,  1],
+            [-1,  1,  1], [ 1,  1,  1],
+            [-1, -1, -1], [ 1, -1, -1],
             [-1,  1, -1], [ 1,  1, -1]);
         this.indices.push(
-            0, 1, 3, // Front face
-            0, 2, 3,
-            0, 2, 4, // Left face
-            2, 4, 6,
-            2, 3, 6, // Top face
-            3, 6, 7,
-            0, 1, 4, // Bottom face
-            1, 4, 5,
-            1, 3, 5, // Right face
-            3, 5, 7,
-            4, 5, 7, // Back face
-            4, 6, 7
+            0, 1, 3, 0, 2, 3, 0, 2, 4, 2, 4, 6, 2, 3, 6, 3, 6, 7, 0, 1, 4, 1, 4, 5, 1, 3, 5, 3, 5, 7, 4, 5, 7, 4, 6, 7
         );
     }
 }
@@ -133,9 +122,9 @@ export class Assignment2 extends Base_Scene {
         this.set_colors();
         const arrayOfColors = this.array_of_colors;
         this.sit_still = false;
-        this.outline = false; //MAY REMOVE THIS, NOT SURE WHAT IT IS
+        this.outline = false;
         this.time_offset = 0;
-        this.last_pause_time = 0;
+        this.last_time_paused = 0;
     }
 
     set_colors() {
@@ -173,20 +162,24 @@ export class Assignment2 extends Base_Scene {
         // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
 
         const t = this.t = program_state.animation_time / 1000;
-        const rotation_angle = 0.05*Math.PI; //LOOK AT THESE
+        const rotation_angle = 0.05*Math.PI;
         const colorz = this.array_of_colors[box_index];
-        const colorzz = this.array_of_colors[0]; //had issues with the 1st two being the same
-        const back_and_forth = 3;
-        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(back_and_forth * Math.PI * (t))));
-        //LOOK AT THESE
+        const sweysec = 3;
+        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(sweysec * Math.PI * (t-this.time_offset))));
+        var firstDone = false; //may use it later
         if (!this.sit_still) {
             rot_angle = rotation_angle;
         }
 
 
 
-       //
-            if(this.outline==true){
+
+        if(this.outline==true){
+            if(box_index==0 ){
+                model_transform = model_transform.times(Mat4.scale(1,1.5,1))
+                this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+            }
+
 
             this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
             model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
@@ -194,14 +187,23 @@ export class Assignment2 extends Base_Scene {
                 .times(Mat4.translation(1, 1, 0))
 
 
-               // model_transform = model_transform.times(Mat4.scale(1,0.67,1));
+
+
         }
         else{
-                if(box_index==0 || box_index==2 || box_index==4 || box_index==6){
-                    this.shapes.strip.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}), "TRIANGLE_STRIP");
-                }else{
-                    this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
-                }
+
+            if(box_index==0 && firstDone==false){
+                model_transform = model_transform.times(Mat4.scale(1,1.5,1))
+                this.shapes.strip.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}), "TRIANGLE_STRIP");
+
+            }
+            if(box_index==2 || box_index==4 || box_index==6){
+
+
+                this.shapes.strip.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}), "TRIANGLE_STRIP");
+            }else{
+                this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:colorz}));
+            }
 
 
 
@@ -209,19 +211,10 @@ export class Assignment2 extends Base_Scene {
                 .times(Mat4.rotation(-rot_angle, 0, 0, -1))
                 .times(Mat4.translation(1, 1, 0))
 
+
         }
 
-
-
-        // }
-        // }
-
-
-
-        this.prev_angle = rot_angle;
-        this.last_pause_time = t;
-
-
+        this.last_time_paused = t;
         // Spin our current coordinate frame as a function of time.  Only do
         // this movement if the button on the page has not been toggled off.
 
