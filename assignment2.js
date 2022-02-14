@@ -31,9 +31,9 @@ class Cube_Outline extends Shape {
         // Note: since the outline is rendered with Basic_shader, you need to redefine the position and color of each vertex
 
 
-        this.arrays.position = Vector3.cast([1,1,-1], [1,-1,-1], [-1,1,1], [-1,-1,1], [1,1,-1],  [-1,1,-1],  [1,1,1],  [-1,1,1],
-            [-1,-1,-1], [-1,-1,1], [-1,1,-1], [-1,1,1], [1,-1,1],  [1,-1,-1],  [1,1,1],  [1,1,-1],
-            [1,-1,1],  [-1,-1,1],  [1,-1,1],  [1,1,1], [1,-1,-1], [-1,-1,-1], [-1,-1,-1], [-1,1,-1]);
+        this.arrays.position = Vector3.cast([1,-1,-1],[1,1,-1], [-1,1,1], [-1,-1,1],  [1,1,1],  [-1,1,1],
+            [-1,-1,-1], [-1,-1,1],[1,1,-1], [-1,1,-1], [1,-1,-1], [-1,-1,-1],[-1,1,-1], [-1,1,1], [1,-1,1],  [1,-1,-1],  [1,1,1],  [1,1,-1],
+            [1,-1,1],  [-1,-1,1],  [1,-1,1],  [1,1,1],  [-1,-1,-1], [-1,1,-1]);
 
 
 
@@ -49,18 +49,15 @@ class Cube_Single_Strip extends Shape {
 
 
         // TODO (Requirement 6)
+        this.arrays.position = Vector3.cast( [ 1, -1,  1],[-1, -1, 1], [-1,  1,  1], [ 1,  1,  1], [-1, -1, -1], [ 1, -1, -1],[ 1,  1, -1],[-1,  1, -1]);
+        this.arrays.normal = Vector3.cast( [ 1, -1,  1],[-1, -1,  1], [-1,  1,  1], [ 1,  1,  1], [-1, -1, -1], [ 1, -1, -1], [ 1,  1, -1],[-1,  1, -1]);
 
-        this.arrays.position = Vector3.cast([-1, -1,  1], [ 1, -1,  1],
-            [-1,  1,  1], [ 1,  1,  1],
-            [-1, -1, -1], [ 1, -1, -1],
-            [-1,  1, -1], [ 1,  1, -1]);
-        this.arrays.normal = Vector3.cast([-1, -1,  1], [ 1, -1,  1],
-            [-1,  1,  1], [ 1,  1,  1],
-            [-1, -1, -1], [ 1, -1, -1],
-            [-1,  1, -1], [ 1,  1, -1]);
+
         this.indices.push(
-            0, 1, 3, 0, 2, 3, 0, 2, 4, 2, 4, 6, 2, 3, 6, 3, 6, 7, 0, 1, 4, 1, 4, 5, 1, 3, 5, 3, 5, 7, 4, 5, 7, 4, 6, 7
+            2, 4, 7, 2, 3, 7, 3, 7, 6, 1, 0, 3, 1, 2, 3, 1, 2, 4, 3, 5, 6, 4, 5, 6, 4, 7, 6, 1, 0, 4, 0, 4, 5, 0, 3, 5,
         );
+
+
     }
 }
 
@@ -123,7 +120,6 @@ export class Assignment2 extends Base_Scene {
         const arrayOfColors = this.array_of_colors;
         this.sit_still = false;
         this.outline = false;
-        this.time_comp = 0;
         this.last_time_paused = 0;
     }
 
@@ -164,17 +160,17 @@ export class Assignment2 extends Base_Scene {
         const t = this.t = program_state.animation_time / 1000;
         const rotation_angle = 0.05*Math.PI;
         const colorz = this.array_of_colors[box_index];
-        const sweysec = 3;
-        let rot_angle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(sweysec * Math.PI * (t-this.time_comp))));
+        let rotangle = ((rotation_angle/2) + ((rotation_angle/2) * Math.sin(2*Math.PI/3*t)));
         var firstDone = false; //may use it later
         if (!this.sit_still) {
-            rot_angle = rotation_angle;
+            rotangle = rotation_angle;
         }
 
 
 
 
         if(this.outline==true){
+
             if(box_index==0 ){
                 model_transform = model_transform.times(Mat4.scale(1,1.5,1))
                 this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
@@ -183,7 +179,7 @@ export class Assignment2 extends Base_Scene {
 
             this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
             model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
-                .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                .times(Mat4.rotation(-rotangle, 0, 0, -1))
                 .times(Mat4.translation(1, 1, 0))
 
 
@@ -208,13 +204,13 @@ export class Assignment2 extends Base_Scene {
 
 
             model_transform = model_transform.times(Mat4.translation(-1, 1, 0))
-                .times(Mat4.rotation(-rot_angle, 0, 0, -1))
+                .times(Mat4.rotation(-rotangle, 0, 0, -1))
                 .times(Mat4.translation(1, 1, 0))
 
 
         }
 
-        this.last_time_paused = t;
+
 
 
         return model_transform;
